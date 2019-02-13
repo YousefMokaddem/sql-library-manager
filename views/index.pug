@@ -1,0 +1,19 @@
+extends layout.pug
+
+block content
+    h1 Books
+    p
+        a(href="/books/new").button Create New Book
+    table
+        thread
+            tr
+                th Title
+                th Author
+                th Genre
+                th Year
+            tr
+        thread
+        tbody
+            tr
+                td
+                    a(href="/books")
