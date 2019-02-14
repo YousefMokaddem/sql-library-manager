@@ -36,6 +36,9 @@ input[type=submit] {
   a.button:hover, input[type=submit]:hover {
     background-color: #01b189;
   }
+  a.active{
+    background-color: #1d473d;
+  }
 
 p {
   margin: 20px auto;
@@ -94,4 +97,9 @@ input[type=text] {
 
 .error {
   color: rgb(236, 15, 15);
+}
+
+.pages li{
+  display: inline;
+  padding-right: 20px;
 }

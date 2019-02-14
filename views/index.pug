@@ -4,6 +4,7 @@ block content
     h1 Books
     p
         a(href="/books/new").button Create New Book
+        input(type="text" placeholder='Search...')#searchbar
     table
         thread
             tr
@@ -15,9 +16,10 @@ block content
         thread
         tbody
             each book in books
-                tr
+                tr.book
                     td
                         a(href=`/books/${book.id}`) #{book.title}
                     td #{book.author}
                     td #{book.genre}
                     td #{book.year}
+    script(src="/static/script.js")
