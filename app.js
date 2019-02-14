@@ -53,7 +53,16 @@ app.post('/books/:id', (req,res) => {
         .then((book) => {
             return book.update(req.body);
         })
-        .then(res.redirect('/books'));
+        .then(() => {
+            res.redirect('/books');
+        })
+        .catch((error) => {
+            if(error.name === "SequelizeValidationError") {
+                let book = Book.build(req.body);
+                book.id = req.params.id;
+                res.render('update-form-error', {...book.dataValues, title: book.dataValues.title});
+            }
+        });
 });
 
 app.get('/books/:id/delete', (req,res) => {
