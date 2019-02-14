@@ -9,38 +9,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (req,res) => {
-    Book.findAll()
-        .then((books) => {
-            let booksArray = [];
-            books.map(book => {
-                booksArray.push(book.dataValues);
-            });
-            res.render('index', {books:booksArray});
-        });
+    res.redirect('/books');
 });
 
 app.get('/books', (req,res) => {
     Book.findAll()
         .then((books) => {
-            /*
-            { id: 1,
-            title: "Harry Potter and the Philosopher's Stone",
-            author: 'J.K. Rowling',
-            genre: 'Fantasy',
-            year: 1997,
-            createdAt: 2018-10-04T18:21:59.011Z,
-            updatedAt: 2018-10-04T18:21:59.011Z }
-            */
             let booksArray = [];
             books.map(book => {
                 booksArray.push(book.dataValues);
             });
-            res.render('index', {books:booksArray});
+            res.render('index', {books:booksArray, title:'Books'});
         });
 });
 
 app.get('/books/new', (req,res) => {
-    res.render('new-book');
+    res.render('new-book', {title: 'Add new book'});
 });
 
 app.post('/books/new', (req,res) => {
@@ -48,7 +32,18 @@ app.post('/books/new', (req,res) => {
         .then(res.redirect(`/books`));
 });
 
-app.put('/books/:id', (req,res) => {
+app.get('/books/:id', (req,res) => {
+    Book.findById(req.params.id)
+        .then((book) => {
+            if(book){
+                res.render('update-book', {...book.dataValues, title: book.dataValues.title});
+            }else{
+                res.render('error');
+            }
+        });
+});
+
+app.post('/books/:id', (req,res) => {
     Book.findById(req.params.id)
         .then((book) => {
             return book.update(req.body);
@@ -56,11 +51,28 @@ app.put('/books/:id', (req,res) => {
         .then(res.redirect('/books'));
 });
 
-app.get('/books/:id', (req,res) => {
+app.get('/books/:id/delete', (req,res) => {
     Book.findById(req.params.id)
         .then((book) => {
-            res.render('update-book', book.dataValues);
+            if(book){
+                book.destroy();
+                res.redirect('/books')
+            }else{
+                res.redirect('/404');
+            }
         });
+});
+
+app.use((req, res, next)=>{
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+app.use((err, req, res, next)=>{
+    res.locals.error = err;
+    res.status(err.status);
+    res.render('page-not-found', err);
 });
 
 app.listen(3000, () => {
