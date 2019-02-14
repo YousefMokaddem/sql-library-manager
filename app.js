@@ -29,7 +29,12 @@ app.get('/books/new', (req,res) => {
 
 app.post('/books/new', (req,res) => {
     Book.create(req.body)
-        .then(res.redirect(`/books`));
+        .then(() => {res.redirect(`/books`)})
+        .catch((error) => {
+            if(error.name === "SequelizeValidationError") {
+                res.render('form-error', {title:'New Book'});
+            }
+        });
 });
 
 app.get('/books/:id', (req,res) => {
@@ -38,7 +43,7 @@ app.get('/books/:id', (req,res) => {
             if(book){
                 res.render('update-book', {...book.dataValues, title: book.dataValues.title});
             }else{
-                res.render('error');
+                res.render('error', {title: 'Page Not Found'});
             }
         });
 });
@@ -72,7 +77,7 @@ app.use((req, res, next)=>{
 app.use((err, req, res, next)=>{
     res.locals.error = err;
     res.status(err.status);
-    res.render('page-not-found', err);
+    res.render('page-not-found', {err : err, title: 'Page not found'});
 });
 
 app.listen(3000, () => {
